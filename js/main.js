@@ -176,6 +176,13 @@
     const locked = document.pointerLockElement === canvas;
     UI.showClickToPlay(!locked && phase === 'playing');
   });
+  // A failed lock request (denied, or blocked by the embedding context)
+  // fires 'pointerlockerror' instead of 'pointerlockchange' — without this,
+  // the "click to resume" prompt would never appear and there'd be no way
+  // to retry.
+  document.addEventListener('pointerlockerror', () => {
+    UI.showClickToPlay(phase === 'playing');
+  });
 
   document.getElementById('click-to-play').addEventListener('click', () => {
     if (phase === 'playing') requestPointerLock();
