@@ -1,0 +1,297 @@
+/* ===== Bach Bond: Licence to Chill — stylesheet ===== */
+
+@font-face {
+  font-family: 'PressStart';
+  src: local('Courier New');
+}
+
+:root {
+  --welsh-red: #c8102e;
+  --welsh-green: #00b140;
+  --dragon-green: #1a7a3c;
+  --parchment: #f2e6c9;
+  --ink: #1b1b1b;
+  --gold: #f2c14e;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  color: var(--parchment);
+  font-family: 'Courier New', monospace;
+  overflow: hidden;
+  user-select: none;
+}
+
+.hidden { display: none !important; }
+
+/* ---------- Generic full-screen menu screens ---------- */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at center, #143d1f 0%, #060a06 80%);
+  text-align: center;
+  z-index: 50;
+}
+
+.title-logo {
+  font-size: clamp(2.4rem, 9vw, 6rem);
+  letter-spacing: 0.4rem;
+  color: var(--gold);
+  text-shadow: 4px 4px 0 var(--welsh-red), 0 0 30px rgba(242,193,78,0.4);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 1.3rem;
+  color: var(--parchment);
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
+.title-menu, .briefing-text {
+  margin-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.menu-btn {
+  font-family: inherit;
+  font-size: 1.05rem;
+  padding: 0.7em 2em;
+  background: linear-gradient(#2a2a2a, #111);
+  color: var(--gold);
+  border: 2px solid var(--gold);
+  cursor: pointer;
+  min-width: 320px;
+  letter-spacing: 0.05em;
+}
+.menu-btn:hover { background: var(--welsh-red); color: white; border-color: white; }
+.menu-btn:active { transform: translateY(1px); }
+
+.controls-hint {
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  color: #9c9c9c;
+  line-height: 1.6;
+}
+
+.title-footer {
+  position: absolute;
+  bottom: 1.2rem;
+  font-size: 0.7rem;
+  color: #666;
+}
+
+.briefing-text {
+  max-width: 640px;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--parchment);
+  white-space: pre-line;
+}
+
+.gameover-title {
+  font-size: 4.5rem;
+  color: var(--welsh-red);
+  text-shadow: 3px 3px 0 #000;
+  margin: 0;
+}
+
+/* ---------- Game container ---------- */
+#game-container {
+  position: fixed;
+  inset: 0;
+  background: #000;
+}
+#game-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+}
+
+/* Crosshair */
+#crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--gold);
+  font-size: 1.4rem;
+  font-weight: bold;
+  pointer-events: none;
+  text-shadow: 0 0 4px #000;
+  z-index: 10;
+}
+
+/* Damage flash - GoldenEye style red pulse */
+#damage-flash {
+  position: absolute;
+  inset: 0;
+  background: rgba(200, 16, 46, 0);
+  pointer-events: none;
+  z-index: 20;
+  transition: background 60ms ease-out;
+}
+#damage-flash.hit { background: rgba(200, 16, 46, 0.55); }
+
+/* Beer blur debuff */
+#beer-blur {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 19;
+  backdrop-filter: blur(0px);
+  transition: backdrop-filter 0.5s ease;
+}
+#beer-blur.drunk { backdrop-filter: blur(3px) saturate(1.4); }
+
+/* HUD */
+#hud {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 1.4rem;
+  z-index: 10;
+  pointer-events: none;
+}
+.hud-left, .hud-right { min-width: 220px; }
+.hud-right { text-align: right; }
+.hud-bar-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: #ccc;
+  margin-bottom: 2px;
+}
+.hud-bar {
+  width: 220px;
+  height: 16px;
+  border: 2px solid #000;
+  background: #222;
+  margin-bottom: 8px;
+  outline: 1px solid #555;
+}
+.hud-bar-fill {
+  height: 100%;
+  width: 100%;
+  transition: width 150ms ease-out;
+}
+.health-bar .hud-bar-fill { background: linear-gradient(#ff4d4d, var(--welsh-red)); }
+.armour-bar .hud-bar-fill { background: linear-gradient(#7fd8ff, #2f8fc4); }
+.boss-bar .hud-bar-fill { background: linear-gradient(#ffbe4d, var(--welsh-red)); }
+
+#boss-health { margin-top: 6px; }
+#boss-health-name {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: var(--welsh-red);
+  text-shadow: 0 0 4px #000;
+}
+.boss-bar { width: 260px; margin: 2px auto 0; }
+
+.hud-center {
+  flex: 1;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--gold);
+  text-shadow: 0 0 4px #000;
+  padding-top: 0.3rem;
+}
+
+#weapon-name {
+  font-size: 1.1rem;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+}
+#ammo-count { font-size: 0.85rem; color: #ddd; }
+#buff-indicator { font-size: 0.8rem; color: #7fffb0; margin-top: 4px; min-height: 1em; }
+
+/* Subtitles */
+#subtitle-box {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 80%;
+  text-align: center;
+  font-size: 1.1rem;
+  color: #fff;
+  text-shadow: 2px 2px 2px #000, 0 0 6px #000;
+  z-index: 15;
+  pointer-events: none;
+  min-height: 1.4em;
+}
+
+/* Dialogue / persuasion box */
+#dialogue-box {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(10, 15, 10, 0.92);
+  border-top: 3px solid var(--gold);
+  padding: 1rem 2rem 1.4rem;
+  z-index: 30;
+}
+#dialogue-npc-name {
+  color: var(--gold);
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+}
+#dialogue-prompt { margin-bottom: 0.8rem; color: var(--parchment); }
+#dialogue-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.dialogue-option {
+  text-align: left;
+  padding: 0.5em 1em;
+  background: #1a1a1a;
+  border: 1px solid #555;
+  color: #eee;
+  cursor: pointer;
+  font-family: inherit;
+}
+.dialogue-option:hover { border-color: var(--gold); color: var(--gold); }
+
+/* Pause menu */
+#pause-menu {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  z-index: 40;
+}
+#pause-menu h2 { color: var(--gold); letter-spacing: 0.2em; }
+
+#click-to-play {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: var(--gold);
+  z-index: 35;
+  cursor: pointer;
+}

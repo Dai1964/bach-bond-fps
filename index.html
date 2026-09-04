@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bach Bond: Licence to Chill</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ===================== TITLE SCREEN ===================== -->
+  <div id="title-screen" class="screen">
+    <h1 class="title-logo">BACH BOND</h1>
+    <div class="subtitle">licence to chill</div>
+    <div class="title-menu">
+      <button id="btn-new-game" class="menu-btn">New Mission</button>
+      <button id="btn-continue" class="menu-btn">Continue (Under the Illtud)</button>
+      <div class="controls-hint">
+        WASD move &middot; Mouse look &middot; Click to shoot/whack &middot; 1/2/3 weapons<br/>
+        Q throw item &middot; E talk/use &middot; ESC pause
+      </div>
+    </div>
+    <div class="title-footer">A Satirical Welsh Infiltration &copy; 2026</div>
+  </div>
+
+  <!-- ===================== MISSION BRIEFING ===================== -->
+  <div id="briefing-screen" class="screen hidden">
+    <h2 id="briefing-title">MISSION 1: LLANFAIR-ON-SEA</h2>
+    <p id="briefing-text" class="briefing-text"></p>
+    <button id="btn-start-mission" class="menu-btn">Begin Infiltration</button>
+  </div>
+
+  <!-- ===================== GAME CANVAS ===================== -->
+  <div id="game-container" class="hidden">
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Crosshair -->
+    <div id="crosshair">+</div>
+
+    <!-- Screen damage flash -->
+    <div id="damage-flash"></div>
+    <!-- Beer debuff blur overlay -->
+    <div id="beer-blur"></div>
+
+    <!-- HUD -->
+    <div id="hud">
+      <div class="hud-left">
+        <div class="hud-bar-label">HEALTH</div>
+        <div class="hud-bar health-bar"><div id="health-fill" class="hud-bar-fill"></div></div>
+        <div class="hud-bar-label">ARMOUR</div>
+        <div class="hud-bar armour-bar"><div id="armour-fill" class="hud-bar-fill"></div></div>
+      </div>
+      <div class="hud-center">
+        <div id="objective-banner"></div>
+        <div id="boss-health" class="hidden">
+          <div id="boss-health-name">DAI HARD</div>
+          <div class="hud-bar boss-bar"><div id="boss-health-fill" class="hud-bar-fill"></div></div>
+        </div>
+      </div>
+      <div class="hud-right">
+        <div id="weapon-name">LEEKS</div>
+        <div id="ammo-count"></div>
+        <div id="buff-indicator"></div>
+      </div>
+    </div>
+
+    <!-- Subtitles for Welsh voice lines -->
+    <div id="subtitle-box"></div>
+
+    <!-- Dialogue (persuasion) UI -->
+    <div id="dialogue-box" class="hidden">
+      <div id="dialogue-npc-name"></div>
+      <div id="dialogue-prompt"></div>
+      <div id="dialogue-options"></div>
+    </div>
+
+    <!-- Pause menu -->
+    <div id="pause-menu" class="hidden">
+      <h2>PAUSED</h2>
+      <button id="btn-resume" class="menu-btn">Resume</button>
+      <button id="btn-cuppa" class="menu-btn">Cuppa (full heal, once per level)</button>
+      <button id="btn-save" class="menu-btn">Save (Under the Illtud)</button>
+      <button id="btn-quit" class="menu-btn">Quit to Title</button>
+    </div>
+
+    <!-- Pointer lock prompt -->
+    <div id="click-to-play" class="hidden">
+      <div>Click to resume infiltration</div>
+    </div>
+  </div>
+
+  <!-- ===================== GAME OVER ===================== -->
+  <div id="gameover-screen" class="screen hidden">
+    <h1 class="gameover-title">CAUGHT SHORT</h1>
+    <div id="gameover-reason" class="subtitle"></div>
+    <button id="btn-retry" class="menu-btn">Have Another Go</button>
+    <button id="btn-title" class="menu-btn">Title Screen</button>
+  </div>
+
+  <!-- ===================== MISSION COMPLETE ===================== -->
+  <div id="win-screen" class="screen hidden">
+    <h1 class="title-logo">TIDY.</h1>
+    <div class="subtitle" id="win-text">Mission Complete</div>
+    <button id="btn-next-mission" class="menu-btn">Next Mission</button>
+    <button id="btn-title-2" class="menu-btn">Title Screen</button>
+  </div>
+
+  <!-- Three.js (pinned version, UMD build) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Game modules -->
+  <script src="js/utils.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/save.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/weapons.js"></script>
+  <script src="js/npc.js"></script>
+  <script src="js/enemy.js"></script>
+  <script src="js/pickups.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
