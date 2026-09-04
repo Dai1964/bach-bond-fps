@@ -8,6 +8,12 @@
 </head>
 <body>
 
+  <!-- Background music: one looping ambient track, playing from the title
+       screen through every mission (see js/music.js). Hidden — controlled
+       entirely via JS, no native <audio> controls shown. -->
+  <audio id="bgm" src="audio/shadowlands-4-breath.mp3" loop preload="auto"></audio>
+  <button id="btn-music-toggle" class="music-toggle" title="Toggle music">&#9835;</button>
+
   <!-- ===================== TITLE SCREEN ===================== -->
   <div id="title-screen" class="screen">
     <h1 class="title-logo">BACH BOND</h1>
@@ -20,7 +26,10 @@
         Q throw item &middot; E talk/use &middot; ESC pause
       </div>
     </div>
-    <div class="title-footer">A Satirical Welsh Infiltration &copy; 2026</div>
+    <div class="title-footer">
+      A Satirical Welsh Infiltration &copy; 2026<br/>
+      Music: &quot;Shadowlands 4 - Breath&quot; by Kevin MacLeod (incompetech.com), licensed under CC BY 4.0
+    </div>
   </div>
 
   <!-- ===================== MISSION BRIEFING ===================== -->
@@ -115,16 +124,17 @@
        cached an older file (this bit us repeatedly during testing, and
        almost certainly bites players the same way after any update)
        always fetch the current version instead of a stale one. -->
-  <script src="js/utils.js?v=4"></script>
-  <script src="js/audio.js?v=4"></script>
-  <script src="js/save.js?v=4"></script>
-  <script src="js/levels.js?v=4"></script>
-  <script src="js/player.js?v=4"></script>
-  <script src="js/weapons.js?v=4"></script>
-  <script src="js/npc.js?v=4"></script>
-  <script src="js/enemy.js?v=4"></script>
-  <script src="js/pickups.js?v=4"></script>
-  <script src="js/ui.js?v=4"></script>
-  <script src="js/main.js?v=4"></script>
+  <script src="js/utils.js?v=5"></script>
+  <script src="js/audio.js?v=5"></script>
+  <script src="js/music.js?v=5"></script>
+  <script src="js/save.js?v=5"></script>
+  <script src="js/levels.js?v=5"></script>
+  <script src="js/player.js?v=5"></script>
+  <script src="js/weapons.js?v=5"></script>
+  <script src="js/npc.js?v=5"></script>
+  <script src="js/enemy.js?v=5"></script>
+  <script src="js/pickups.js?v=5"></script>
+  <script src="js/ui.js?v=5"></script>
+  <script src="js/main.js?v=5"></script>
 </body>
 </html>

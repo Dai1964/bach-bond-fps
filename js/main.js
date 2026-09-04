@@ -324,6 +324,15 @@
 
   refreshContinueButton();
 
+  // ---------------- background music ----------------
+  Music.init();
+  const musicBtn = document.getElementById('btn-music-toggle');
+  musicBtn.classList.toggle('muted', Music.isMuted());
+  musicBtn.addEventListener('click', () => {
+    const muted = Music.toggleMute();
+    musicBtn.classList.toggle('muted', muted);
+  });
+
   // ---------------- game loop ----------------
   function ammoText() {
     if (weapons.currentIndex === 0) return '∞';
