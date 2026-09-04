@@ -150,8 +150,18 @@ const Weapons = (() => {
 
   function throwCurrent(w, scene, camera) {
     const kind = w.currentIndex === 1 ? 'dragon' : w.currentIndex === 2 ? 'daffodil' : null;
-    if (!kind) return; // leeks don't throw
-    if (w.ammo[kind] <= 0) { Audio1.blip(); return; }
+    if (!kind) {
+      // Leeks are melee-only — without this, pressing Q or clicking while
+      // the Leek is equipped is a silent no-op that looks exactly like
+      // "throwing is broken".
+      UI.subtitle("Can't throw a leek, mun — switch weapon first (2 or 3).");
+      return;
+    }
+    if (w.ammo[kind] <= 0) {
+      Audio1.blip();
+      UI.subtitle('Out of ' + (kind === 'dragon' ? 'Throwing Dragons' : 'Daffodils') + '!');
+      return;
+    }
     if (w.cooldown > 0) return;
     w.cooldown = 0.5;
     w.ammo[kind]--;
