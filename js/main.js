@@ -113,10 +113,23 @@
     requestPointerLock();
   }
 
+  // Browsers throttle/reject rapid repeat pointer-lock requests (especially
+  // right after a previous exit), and the "click to resume" overlay stays
+  // visible until the async pointerlockchange event confirms success — so
+  // without this guard, impatient repeat-clicking just re-requests the lock
+  // over and over instead of ever landing a "shoot" click on the canvas.
+  let lockRequestPending = false;
   function requestPointerLock() {
-    if (!canvas.requestPointerLock) return;
-    const result = canvas.requestPointerLock();
-    if (result && result.catch) result.catch(() => {}); // ignore denials (e.g. sandboxed/embedded contexts)
+    if (!canvas.requestPointerLock || lockRequestPending) return;
+    lockRequestPending = true;
+    const clear = () => { lockRequestPending = false; };
+    try {
+      const result = canvas.requestPointerLock();
+      if (result && result.then) result.then(clear, clear);
+      else setTimeout(clear, 400); // older callback-style API has no promise to hook
+    } catch (e) {
+      clear();
+    }
   }
 
   // ---------------- input ----------------
@@ -127,9 +140,9 @@
     if (e.repeat) return;
 
     if (phase === 'playing') {
-      if (e.code === 'Digit1') Weapons.switchTo(weapons, 0);
-      if (e.code === 'Digit2') Weapons.switchTo(weapons, 1);
-      if (e.code === 'Digit3') Weapons.switchTo(weapons, 2);
+      if (e.code === 'Digit1') { Weapons.switchTo(weapons, 0); UI.subtitle('Leeks out.', 1); }
+      if (e.code === 'Digit2') { Weapons.switchTo(weapons, 1); UI.subtitle('Throwing Dragons ready.', 1); }
+      if (e.code === 'Digit3') { Weapons.switchTo(weapons, 2); UI.subtitle('Daffodils ready.', 1); }
       if (e.code === 'KeyQ') Weapons.throwCurrent(weapons, scene, camera);
       if (e.code === 'KeyF') {
         const dual = Weapons.toggleDualLeek(weapons);
@@ -173,6 +186,7 @@
   });
 
   document.addEventListener('pointerlockchange', () => {
+    lockRequestPending = false;
     const locked = document.pointerLockElement === canvas;
     UI.showClickToPlay(!locked && phase === 'playing');
   });
@@ -181,6 +195,7 @@
   // the "click to resume" prompt would never appear and there'd be no way
   // to retry.
   document.addEventListener('pointerlockerror', () => {
+    lockRequestPending = false;
     UI.showClickToPlay(phase === 'playing');
   });
 

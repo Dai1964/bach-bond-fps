@@ -294,4 +294,13 @@ html, body {
   color: var(--gold);
   z-index: 35;
   cursor: pointer;
+  text-align: center;
+}
+.click-to-play-hint {
+  font-size: 0.75rem;
+  color: #ccc;
+  margin-top: 0.6rem;
+  max-width: 32ch;
+  margin-left: auto;
+  margin-right: auto;
 }
