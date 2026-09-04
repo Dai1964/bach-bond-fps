@@ -102,12 +102,30 @@ const Pickups = (() => {
       }
     }
 
+    // Drinking is a deliberate action (press E — see Pickups.tryDrink),
+    // not an automatic proximity trigger: this used to fire every time the
+    // player's path crossed the barrel's radius, which meant just walking
+    // past it while looking for the manifest (or dodging a guard) could
+    // rack up "too many beers" completely by accident.
     for (const pub of state.pubs) {
       const d = Utils.dist2D(player.x, player.z, pub.mesh.position.x, pub.mesh.position.z);
-      const inside = d < 1.6;
-      if (inside && !pub.wasInside) drink(player);
-      pub.wasInside = inside;
+      const inRange = d < 1.8;
+      if (inRange && !pub.wasInside) UI.subtitle("There's a barrel here — press E for a pint.");
+      pub.wasInside = inRange;
     }
+  }
+
+  // Called from main.js's E-to-interact handler. Returns true if a pub was
+  // in range (so the caller knows not to also try a villager, etc.).
+  function tryDrink(state, player) {
+    for (const pub of state.pubs) {
+      const d = Utils.dist2D(player.x, player.z, pub.mesh.position.x, pub.mesh.position.z);
+      if (d < 1.8) {
+        drink(player);
+        return true;
+      }
+    }
+    return false;
   }
 
   function collect(item, player, gameState) {
@@ -151,5 +169,5 @@ const Pickups = (() => {
     }
   }
 
-  return { create, update };
+  return { create, update, tryDrink };
 })();

@@ -111,17 +111,20 @@
   <!-- Three.js (pinned version, UMD build) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-  <!-- Game modules -->
-  <script src="js/utils.js"></script>
-  <script src="js/audio.js"></script>
-  <script src="js/save.js"></script>
-  <script src="js/levels.js"></script>
-  <script src="js/player.js"></script>
-  <script src="js/weapons.js"></script>
-  <script src="js/npc.js"></script>
-  <script src="js/enemy.js"></script>
-  <script src="js/pickups.js"></script>
-  <script src="js/ui.js"></script>
-  <script src="js/main.js"></script>
+  <!-- Game modules. The ?v=N query bumps on every fix so browsers that
+       cached an older file (this bit us repeatedly during testing, and
+       almost certainly bites players the same way after any update)
+       always fetch the current version instead of a stale one. -->
+  <script src="js/utils.js?v=4"></script>
+  <script src="js/audio.js?v=4"></script>
+  <script src="js/save.js?v=4"></script>
+  <script src="js/levels.js?v=4"></script>
+  <script src="js/player.js?v=4"></script>
+  <script src="js/weapons.js?v=4"></script>
+  <script src="js/npc.js?v=4"></script>
+  <script src="js/enemy.js?v=4"></script>
+  <script src="js/pickups.js?v=4"></script>
+  <script src="js/ui.js?v=4"></script>
+  <script src="js/main.js?v=4"></script>
 </body>
 </html>

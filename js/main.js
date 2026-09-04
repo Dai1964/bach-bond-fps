@@ -140,9 +140,12 @@
     if (e.repeat) return;
 
     if (phase === 'playing') {
-      if (e.code === 'Digit1') { Weapons.switchTo(weapons, 0); UI.subtitle('Leeks out.', 1); }
-      if (e.code === 'Digit2') { Weapons.switchTo(weapons, 1); UI.subtitle('Throwing Dragons ready.', 1); }
-      if (e.code === 'Digit3') { Weapons.switchTo(weapons, 2); UI.subtitle('Daffodils ready.', 1); }
+      // Accept the numpad digits too (Numpad1/2/3) — a laptop with NumLock
+      // on, or a numpad-equipped keyboard, sends those instead of Digit1/2/3
+      // and would otherwise make weapon-switching silently do nothing.
+      if (e.code === 'Digit1' || e.code === 'Numpad1') { Weapons.switchTo(weapons, 0); UI.subtitle('Leeks out.', 1); }
+      if (e.code === 'Digit2' || e.code === 'Numpad2') { Weapons.switchTo(weapons, 1); UI.subtitle('Throwing Dragons ready.', 1); }
+      if (e.code === 'Digit3' || e.code === 'Numpad3') { Weapons.switchTo(weapons, 2); UI.subtitle('Daffodils ready.', 1); }
       if (e.code === 'KeyQ') Weapons.throwCurrent(weapons, scene, camera);
       if (e.code === 'KeyF') {
         const dual = Weapons.toggleDualLeek(weapons);
@@ -152,7 +155,7 @@
         const analog = Player.toggleAnalogMode(player);
         UI.subtitle(analog ? 'N64 analog controls: A/D to turn.' : 'Mouse look restored.');
       }
-      if (e.code === 'KeyE') tryPersuade();
+      if (e.code === 'KeyE') tryInteract();
       if (e.code === 'Escape') openPause();
     } else if (phase === 'paused') {
       if (e.code === 'Escape') closePause();
@@ -203,13 +206,20 @@
     if (phase === 'playing') requestPointerLock();
   });
 
-  function tryPersuade() {
+  // E interacts with whatever's closest: a villager to persuade, or — if
+  // none's in range — a pub barrel to drink from (see pickups.js: drinking
+  // used to auto-trigger on proximity, which meant just walking near the
+  // manifest in the village pub could rack up accidental beers).
+  function tryInteract() {
     let nearest = null, nearestD = 2.6;
     for (const v of villagers) {
       const d = Utils.dist2D(player.x, player.z, v.mesh.position.x, v.mesh.position.z);
       if (d < nearestD) { nearest = v; nearestD = d; }
     }
-    if (!nearest) return;
+    if (!nearest) {
+      Pickups.tryDrink(pickupState, player);
+      return;
+    }
     if (nearest.followTarget === player) {
       UI.subtitle(nearest.name + " is already with me, isn't it.");
       return;
