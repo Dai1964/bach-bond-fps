@@ -84,6 +84,41 @@ const Levels = (() => {
     };
   }
 
+  // Unlike building() (one solid box — fine for backdrop cottages the
+  // player only ever walks around), this builds an open-fronted structure:
+  // three walls (back + two sides) with no wall on the +Z (south) face, so
+  // the player can actually walk inside. Used for the pub, whose beer
+  // barrel and manifest pickup need to be reachable, not embedded in solid
+  // geometry. Returns an array of the (up to three) wall colliders.
+  function openFrontBuilding(scene, cx, cz, w, d, h, wallTex) {
+    const t = textures();
+    const tex2 = wallTex || t.stoneDark;
+    const thickness = 0.3;
+    const halfW = w / 2, halfD = d / 2;
+    const colliders = [];
+
+    const back = box(w, h, thickness, tex2, cx, h / 2, cz - halfD + thickness / 2);
+    back.userData.isWall = true;
+    scene.add(back);
+    colliders.push({ minX: cx - halfW, maxX: cx + halfW, minZ: cz - halfD, maxZ: cz - halfD + thickness });
+
+    const west = box(thickness, h, d, tex2, cx - halfW + thickness / 2, h / 2, cz);
+    west.userData.isWall = true;
+    scene.add(west);
+    colliders.push({ minX: cx - halfW, maxX: cx - halfW + thickness, minZ: cz - halfD, maxZ: cz + halfD });
+
+    const east = box(thickness, h, d, tex2, cx + halfW - thickness / 2, h / 2, cz);
+    east.userData.isWall = true;
+    scene.add(east);
+    colliders.push({ minX: cx + halfW - thickness, maxX: cx + halfW, minZ: cz - halfD, maxZ: cz + halfD });
+
+    const roof = cone(Math.max(w, d) * 0.75, h * 0.6, t.roof, cx, h + (h * 0.3), cz);
+    roof.rotation.y = Math.PI / 4;
+    scene.add(roof);
+
+    return colliders;
+  }
+
   function ground(scene, size, tex) {
     const t = textures();
     const groundTex = tex || t.grass;
@@ -275,8 +310,11 @@ const Levels = (() => {
     colliders.push(building(scene, -14, 10, 7, 7, 4.2, 0));
     colliders.push(building(scene, 20, 16, 8, 6, 4.5, 0.3));
 
-    // The pub — "Y Ddraig Feddw" (The Drunken Dragon)
-    colliders.push(building(scene, -22, 18, 10, 8, 5, 0, t.stoneDark));
+    // The pub — "Y Ddraig Feddw" (The Drunken Dragon). Open-fronted (south
+    // side, facing the square) so the player can actually walk in to reach
+    // the barrel and the manifest — a plain solid building() here would
+    // trap both pickups inside unreachable geometry.
+    colliders.push(...openFrontBuilding(scene, -22, 18, 10, 8, 5));
     {
       const sign = box(2.2, 0.8, 0.1, t.wood, -22, 5.6, 13.9);
       scene.add(sign);
@@ -328,13 +366,16 @@ const Levels = (() => {
         { x: 0, z: -20, type: 'armour' },
       ],
 
+      // Both sit inside the pub's open-fronted interior (back wall at
+      // z=14, side walls at x=-27/-17, open on the south/z=22+ side) —
+      // clear of all three wall colliders, so they're actually reachable.
       pubSpawns: [
-        { x: -22, z: 16 },
+        { x: -22, z: 20 },
       ],
 
       // The MacGuffin the player must retrieve from inside the pub before
       // the extraction zone will register as complete.
-      manifestSpawn: { x: -22, z: 20 },
+      manifestSpawn: { x: -22, z: 16 },
 
       // Only real checklist items go here — reaching the extraction zone is
       // checked separately (main.js) once every objective below is done, so
