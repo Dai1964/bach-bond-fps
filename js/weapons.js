@@ -68,7 +68,16 @@ const Weapons = (() => {
     camera.add(viewRig);
 
     const models = [buildLeekModel(), buildDragonModel(), buildDaffodilModel()];
-    models.forEach((m, i) => { m.visible = i === 0; viewRig.add(m); });
+    models.forEach((m, i) => {
+      m.visible = i === 0;
+      // Remember each model's resting position — updateViewmodel() adds a
+      // small bob/sway on top of this every frame rather than overwriting
+      // position.x/y outright (which used to snap dragon/daffodil, whose
+      // rest position isn't the origin, to screen-center).
+      m.userData.restX = m.position.x;
+      m.userData.restY = m.position.y;
+      viewRig.add(m);
+    });
 
     return {
       camera, viewRig, models,
@@ -108,8 +117,8 @@ const Weapons = (() => {
     const model = w.models[w.currentIndex];
     const bobY = Math.sin(w.bobT) * (isMoving ? 0.015 : 0.004);
     const bobX = Math.cos(w.bobT * 0.5) * (isMoving ? 0.01 : 0.002);
-    model.position.x = bobX;
-    model.position.y = bobY;
+    model.position.x = model.userData.restX + bobX;
+    model.position.y = model.userData.restY + bobY;
   }
 
   // Raycast-based melee swing for the Leeks.
