@@ -197,7 +197,7 @@ const Weapons = (() => {
     const mesh = new THREE.Mesh(geo, mat);
     mesh.position.copy(pos);
     scene.add(mesh);
-    w.pollenClouds.push({ mesh, radius: 0.4, maxRadius: 3.2, life: 3.5, maxLife: 3.5 });
+    w.pollenClouds.push({ mesh, radius: 0.4, maxRadius: 3.2, life: 3.5, maxLife: 3.5, hitSet: new Set() });
     Audio1.daffodilPop();
   }
 
@@ -270,7 +270,17 @@ const Weapons = (() => {
       for (const e of enemyLike) {
         if (!e.alive) continue;
         const d = c.mesh.position.distanceTo(e.mesh.position);
-        if (d < c.radius) e.daze && e.daze(2.5);
+        // hitSet stops this from re-triggering every frame an entity
+        // lingers inside the cloud (it can persist ~3.5s) — each entity
+        // gets dazed AND actually hit exactly once per cloud. Previously
+        // this only called .daze(), so Daffodils could stun a guard
+        // forever but never actually knock him out — no weapon should be
+        // a dead end like that.
+        if (d < c.radius && !c.hitSet.has(e)) {
+          c.hitSet.add(e);
+          e.daze && e.daze(2.5);
+          e.onHit && e.onHit('daffodil');
+        }
       }
       if (c.life <= 0) {
         scene.remove(c.mesh);
