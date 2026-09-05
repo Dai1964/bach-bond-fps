@@ -401,8 +401,20 @@
       const boss = enemies.find(e => e.isBoss);
       if (boss) {
         if (boss.alive) {
-          UI.showBossHealth(boss.bossName || 'BOSS');
-          UI.updateBossHealth(boss.hp, boss.maxHp);
+          // requireAllWeapons bosses track progress as "how many distinct
+          // weapon types have landed" rather than hp — the bar fills as
+          // you vary your attack, not as you spam one weapon. The name
+          // label lists what's left, so it's never a guessing game.
+          if (boss.requireAllWeapons) {
+            const remaining = ['leek', 'dragon', 'daffodil'].filter(w => !boss.weaponsUsed.has(w));
+            const label = (boss.bossName || 'BOSS') +
+              (remaining.length ? ' — needs: ' + remaining.join(', ').toUpperCase() : '');
+            UI.showBossHealth(label);
+            UI.updateBossHealth(3 - boss.weaponsUsed.size, 3);
+          } else {
+            UI.showBossHealth(boss.bossName || 'BOSS');
+            UI.updateBossHealth(boss.hp, boss.maxHp);
+          }
         } else {
           UI.hideBossHealth();
         }

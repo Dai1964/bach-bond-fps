@@ -639,14 +639,15 @@ const Levels = (() => {
       enemySpawns: [
         { x: -6, z: 8, ry: 0, patrol: [{ x: -6, z: 8 }, { x: 6, z: 8 }] },
         { x: 6, z: -18, ry: Math.PI, patrol: [{ x: 6, z: -18 }, { x: -6, z: -18 }] },
-        // Dai Hard himself — stands his ground until spotted, takes 4 hits,
-        // and gets his own lines instead of the usual Welsh phrase banks.
+        // Dai Hard himself — stands his ground until spotted, and only
+        // actually goes down once he's been hit by all three weapons at
+        // least once (requireAllWeapons) — spamming one won't finish him.
         {
           x: 0, z: -40, ry: Math.PI, patrol: [{ x: 0, z: -40 }],
-          isBoss: true, bossName: 'DAI HARD', hp: 4, scale: 1.3, uniformColor: 0x8a1424,
+          isBoss: true, bossName: 'DAI HARD', requireAllWeapons: true, scale: 1.3, uniformColor: 0x8a1424,
           linesSpot: ["Ah, Agent Bach Bond. I wondered when you'd show, boyo."],
           linesArriving: ["Get him, boys! ...well — in a minute, obviously."],
-          linesDefeat: ["Duw... you've got me. The sheep... were never meant to know..."],
+          linesDefeat: ["Duw... you've got me. Leek, dragon AND daffodil — nobody told me you were thorough."],
         },
       ],
 
@@ -677,7 +678,10 @@ const Levels = (() => {
         "his guards, put him down, and get off the pitch via the far " +
         "try-line.\n\n" +
         "He won't come quiet. Then again, going by everyone else you've " +
-        "met this week, he probably won't come at all for half a minute.",
+        "met this week, he probably won't come at all for half a minute.\n\n" +
+        "One more thing — Q told me he's rigged himself up somehow so no " +
+        "single weapon puts him down for good. You'll want the leek, a " +
+        "dragon, AND a daffodil on him before he stays down.",
     };
   }
 

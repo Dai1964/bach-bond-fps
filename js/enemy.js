@@ -75,6 +75,12 @@ const Enemy = (() => {
       bossName: def.bossName,
       hp: def.hp || 1,
       maxHp: def.hp || 1,
+      // If set, this enemy can only actually be finished off once he's been
+      // hit by all three weapon types at least once — spamming one weapon
+      // will stagger him forever but never knock him out. weaponsUsed
+      // tracks which of 'leek'/'dragon'/'daffodil' have landed so far.
+      requireAllWeapons: !!def.requireAllWeapons,
+      weaponsUsed: new Set(),
       sightRange: def.sightRange || SIGHT_RANGE,
       alertDelay: def.alertDelay != null ? def.alertDelay : ALERT_DELAY,
       linesSpot: def.linesSpot || Welsh.spot,
@@ -92,10 +98,29 @@ const Enemy = (() => {
     return enemy;
   }
 
-  // Regular guards go down in one hit (hp defaults to 1); the boss has more
-  // hp so leek/dragon hits stagger him a few times before he's actually KO'd.
+  // Regular guards go down in one hit (hp defaults to 1). A requireAllWeapons
+  // boss ignores hp for the actual KO decision — he's only finished off once
+  // every weapon type has landed on him at least once (see weaponsUsed).
   function damage(enemy, source) {
     if (enemy.koTimer > 0) return;
+
+    if (enemy.requireAllWeapons) {
+      const isNewWeapon = source && !enemy.weaponsUsed.has(source);
+      if (isNewWeapon) enemy.weaponsUsed.add(source);
+      if (enemy.weaponsUsed.size >= 3) {
+        knockOut(enemy, source);
+        return;
+      }
+      enemy.staggerTimer = 0.5;
+      enemy.mesh.rotation.x = -0.35;
+      flashHit(enemy);
+      Audio1.hurt();
+      UI.subtitle(isNewWeapon
+        ? Utils.choice(['That did something! Keep mixing it up.', "He wasn't ready for that one!", "Tidy — now try something else."])
+        : Utils.choice(["Same trick won't work twice on him!", "He's wise to that one now — try another weapon.", "That won't work again, mun."]));
+      return;
+    }
+
     enemy.hp--;
     if (enemy.hp <= 0) {
       knockOut(enemy, source);
