@@ -42,6 +42,8 @@ const Enemy = (() => {
     g.add(body, head, hat, legL, legR, armL, armR);
     g.userData.legL = legL;
     g.userData.legR = legR;
+    g.userData.hitFlashMats = [uniform, skin]; // flashed briefly on a non-lethal hit
+    g.userData.hitFlashBaseColors = [uniform.color.getHex(), skin.color.getHex()];
     g.scale.setScalar(scale);
     return g;
   }
@@ -99,9 +101,28 @@ const Enemy = (() => {
       knockOut(enemy, source);
     } else {
       enemy.staggerTimer = 0.5;
+      enemy.mesh.rotation.x = -0.35; // knocked back — recovers in update()
+      flashHit(enemy);
       Audio1.hurt();
       UI.subtitle(Utils.choice(['Duw, that stings!', "You'll have to do better than that!", 'Right, now you\'ve done it.']));
     }
+  }
+
+  // Briefly flash a non-lethally-hit guard's materials white, so a hit that
+  // didn't finish him off is still visibly, unmistakably a hit — not silence.
+  // Cancels any flash already in progress so rapid repeat hits can't leave
+  // the guard stuck white (a second flash capturing "white" as its own
+  // "original" color to revert to, once the first timeout already fired).
+  function flashHit(enemy) {
+    const mats = enemy.mesh.userData.hitFlashMats;
+    const originals = enemy.mesh.userData.hitFlashBaseColors;
+    if (!mats) return;
+    if (enemy.flashTimeoutId) clearTimeout(enemy.flashTimeoutId);
+    mats.forEach(m => m.color.setHex(0xffffff));
+    enemy.flashTimeoutId = setTimeout(() => {
+      mats.forEach((m, i) => m.color.setHex(originals[i]));
+      enemy.flashTimeoutId = null;
+    }, 120);
   }
 
   function knockOut(enemy, source) {
@@ -147,6 +168,7 @@ const Enemy = (() => {
     }
     if (enemy.staggerTimer > 0) {
       enemy.staggerTimer -= dt;
+      if (enemy.staggerTimer <= 0) enemy.mesh.rotation.x = 0; // recover from the knockback tilt
       return; // boss reeling from a hit that didn't quite finish him
     }
 
