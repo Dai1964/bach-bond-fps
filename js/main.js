@@ -181,7 +181,7 @@
     if (e.button !== 0) return;
     if (document.pointerLockElement !== canvas || phase !== 'playing') return;
     if (weapons.currentIndex === 0) {
-      const hit = Weapons.meleeAttack(weapons, camera, [...enemies, ...sheep]);
+      const hit = Weapons.meleeAttack(weapons, camera, [...enemies, ...sheep, ...villagers]);
       if (hit) hit.onHit && hit.onHit('leek');
     } else {
       Weapons.throwCurrent(weapons, scene, camera);
@@ -384,7 +384,7 @@
       for (const v of villagers) NPC.updateVillager(v, dt, player, enemies);
 
       Weapons.updateProjectiles(
-        weapons, dt, scene, colliders, [...enemies, ...sheep],
+        weapons, dt, scene, colliders, [...enemies, ...sheep, ...villagers],
         (e) => e.onHit && e.onHit('dragon'),
         (pos) => Weapons.spawnPollenCloud(weapons, scene, pos)
       );

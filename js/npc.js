@@ -164,11 +164,24 @@ const NPC = (() => {
       alive: true,
     };
     mesh.userData.entityRef = villager;
-    villager.onHit = () => {}; // villagers can't be harmed — comic invulnerability
+    // Villagers can't actually be harmed (comic invulnerability), but they
+    // do react — to a leek/dragon hit or a daffodil pollen cloud alike.
+    villager.reactCooldown = 0;
+    villager.onHit = () => reactToHit(villager);
+    villager.daze = () => reactToHit(villager);
     return villager;
   }
 
+  function reactToHit(villager) {
+    if (villager.reactCooldown > 0) return;
+    villager.reactCooldown = 1.5;
+    Audio1.gasp();
+    UI.subtitle(villager.name + ': "Ach y fi!"');
+  }
+
   function updateVillager(villager, dt, player, enemies) {
+    if (villager.reactCooldown > 0) villager.reactCooldown -= dt;
+
     // Enemies can absent-mindedly lead a villager astray just by being close.
     if (!villager.followTarget || villager.followTarget !== player) {
       villager.leadCooldown -= dt;

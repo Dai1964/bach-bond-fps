@@ -53,6 +53,8 @@ const Audio1 = (() => {
     daffodilPop() { noiseBurst(0.25, 0.25, 2200); tone(500, 0.15, 'sine', 0.15, 900); },
     // Pickup / heal
     pickup() { tone(660, 0.08, 'square', 0.2, 990); },
+    // Startled villager gasp ("Ach y fi!")
+    gasp() { tone(700, 0.09, 'sine', 0.18, 1100); },
     // Beer glug
     beerGlug() { tone(220, 0.2, 'sine', 0.2, 160); },
     // Alarm shout
